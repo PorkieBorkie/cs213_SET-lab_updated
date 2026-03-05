@@ -151,19 +151,22 @@ int analyze_signal(signal* sig, int filter_order, int num_bands, double* lb, dou
   double start = get_seconds();
   unsigned long long tstart = get_cycle_count();
 
-  double filter_coeffs[filter_order + 1];
   double band_power[num_bands];
 
-  // create struct for thread args
-  struct thread_args* args = (struct thread_args*) malloc(sizeof(struct thread_args)); 
-  args->bw = bandwidth;
-  args->bp = band_power;
-  args->sg = sig;
-  args->filter_o = filter_order;
-  args->filter_c = filter_coeffs;
+  // // separate filter_coeffs for each thread
+  // double filter_coeffs[filter_order + 1];
+  
 
 
   for (long i = 0; i < num_th; i++) {
+    // create struct for thread args
+    // new struct each time for each thread
+    struct thread_args* args = (struct thread_args*) malloc(sizeof(struct thread_args)); 
+    args->bw = bandwidth;
+    args->bp = band_power;
+    args->sg = sig;
+    args->filter_o = filter_order;
+    args->filter_c = (double*) malloc((filter_order+1)*sizeof(double));
     args->id = (long)i;
     int returncode = pthread_create(&(tids[i]),
                                     NULL,
