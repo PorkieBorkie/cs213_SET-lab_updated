@@ -121,14 +121,12 @@ int convolve_and_compute_power(int length, double input_signal[],
 
   for (int i = 0; i < length; i++) {
     double cur_sum = 0;
-    for (int j = order; j >= 0; j--) {
+    for (int j = fmin(i, order); j >= 0; j--) {
       // Use coeff only if there is input signal
       // that matches, otherwise assume input signal
       // is zero (aperiodic model)
-      if ((i - j) >= 0 && (i - j) < length) {
         // Causal model, use inputs up to this point
         cur_sum += input_signal[i - j] * coeffs[j];
-      }
     }
     pow_sum += cur_sum * cur_sum;
   }
